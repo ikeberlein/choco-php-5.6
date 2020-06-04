@@ -3,11 +3,12 @@ FROM php:5.6-cli-alpine
 RUN apk update && apk upgrade \
 	&& apk add bash \
 	&& apk add \
-		geoip icu-libs libmcrypt libgd libuuid gmp postgresql-libs yaml libmemcached imagemagick-libs c-client \
+		geoip icu-libs libmcrypt libgd libuuid gmp postgresql-libs yaml libmemcached \
+		gettext imagemagick-libs c-client \
 		imap-dev boost-dev bzip2-dev gd-dev geoip-dev imagemagick-dev icu-dev gmp-dev \
-        libevent-dev libmcrypt-dev libmemcached-dev libpng-dev libressl-dev libxml2-dev \
+		libevent-dev libmcrypt-dev libmemcached-dev libpng-dev libressl-dev libxml2-dev \
 		memcached-dev postgresql-dev util-linux-dev zlib-dev yaml-dev gperf git \
-		autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c \
+		gettext-dev autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c \
 		file \
 	  \
     && (cd /tmp \
@@ -24,11 +25,16 @@ RUN apk update && apk upgrade \
 	  && pecl download mongo-1.6.16 \
 	  && mkdir mongo \
 	  && tar xf mongo-1.6.16.tgz -C mongo --strip-components=1) \ 
-      \
+	\
 	&& (cd /tmp \
 	  && pecl download yaml-1.3.2 \
 	  && mkdir yaml \
 	  && tar xf yaml-1.3.2.tgz -C yaml --strip-components=1) \
+	&& (cd /tmp \
+	  && pecl download geoip-1.1.0 \
+	  && mkdir geoip \
+	  && tar xf geoip-1.1.0.tgz -C geoip --strip-components=1) \
+	\
 	&& (cd /tmp \
 	  && git clone https://github.com/tarantool/tarantool-php.git)\
 	\
@@ -42,8 +48,8 @@ RUN apk update && apk upgrade \
 	\
 	&& docker-php-ext-install \
 		bcmath calendar dba gd gmp intl mysql pgsql mysqli \
-		pdo_mysql pdo_pgsql soap sockets wddx imap pcntl \
-		/tmp/blitz /tmp/memcached /tmp/mongo /tmp/yaml \
+		pdo_mysql pdo_pgsql soap sockets wddx imap pcntl gettext \
+		/tmp/blitz /tmp/memcached /tmp/mongo /tmp/yaml /tmp/geoip \
 		/tmp/tarantool-php \
 	&& (pecl install gearman && docker-php-ext-enable gearman) \
 	&& (pecl install imagick && docker-php-ext-enable imagick) \
